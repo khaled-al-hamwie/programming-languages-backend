@@ -13,8 +13,13 @@ class Experience extends Model
     protected $attributes = [
         'is_private' => false
     ];
-    protected $hidden = [
-        'experience_id'
-    ];
+    // protected $hidden = [
+    //     'experience_id'
+    // ];
     public $timestamps = false;
+
+    public function expert()
+    {
+        return $this->belongsTo(Expert::class, 'expert_id');
+    }
 }
