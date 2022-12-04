@@ -15,8 +15,6 @@ class ExpertController extends Controller
      */
     public function index(Request $request)
     {
-        // return Expert::find(1)->experiences[0]->name;
-        // return Expert::find(1);
         $name = $request->query("name");
         if (!is_null($name))
             return Expert::where('name', 'regexp', "$name")->get();

@@ -9,7 +9,7 @@ class Expert extends Model
 {
     use HasFactory;
     protected $primaryKey = 'expert_id';
-    protected $fillable = ['name', 'pic', 'phone', 'address', 'openning_time'];
+    protected $fillable = ['name', 'pic', 'phone', 'address', 'openning_time', 'category_id'];
     protected $attributes = [
         'rating' => 0,
         // 'experiences' => $this->experiences

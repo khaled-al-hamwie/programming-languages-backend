@@ -33,6 +33,7 @@ class ExpertRequest extends FormRequest
     {
         $rules = [
             'name' => ['required', 'string', 'min:5', 'max:45'],
+            'category_id' => ['required', 'numeric', 'exists:categories,category_id'],
             'pic' => ['file', 'image', 'dimensions:min_width=100,min_height=100'],
             'phone' => ['required', 'string', 'min:7', 'max:45', 'unique:experts'],
             'address' => ['required', 'string', 'min:5', 'max:45'],
@@ -41,6 +42,7 @@ class ExpertRequest extends FormRequest
         if (in_array($this->method(), ["PATCH"])) {
             $rules = [
                 'name' => ['string', 'min:5', 'max:45'],
+                'category_id' => ['numeric', 'exists:categories,category_id'],
                 'pic' => ['file', 'image', 'dimensions:min_width=100,min_height=100'],
                 'phone' => ['string', 'min:7', 'max:45', Rule::unique('experts', 'phone')->ignore($this->expert_id, 'expert_id')],
                 'address' => ['string', 'min:5', 'max:45'],
