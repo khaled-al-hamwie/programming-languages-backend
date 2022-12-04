@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\ExpertController;
 use Illuminate\Http\Request;
@@ -21,3 +22,5 @@ Route::post('/experience', [ExperienceController::class, 'store']);
 Route::get('/experience/{id}', [ExperienceController::class, 'show']);
 Route::patch('/experience/{id}', [ExperienceController::class, 'update']);
 Route::delete('/experience/{id}', [ExperienceController::class, 'destroy']);
+
+Route::get('/category', [CategoryController::class, 'index']);
