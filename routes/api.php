@@ -24,3 +24,4 @@ Route::patch('/experience/{id}', [ExperienceController::class, 'update']);
 Route::delete('/experience/{id}', [ExperienceController::class, 'destroy']);
 
 Route::get('/category', [CategoryController::class, 'index']);
+Route::get('/category/{id}', [CategoryController::class, 'show']);
