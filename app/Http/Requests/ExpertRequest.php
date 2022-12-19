@@ -38,6 +38,9 @@ class ExpertRequest extends FormRequest
             'phone' => ['required', 'string', 'min:7', 'max:45', 'unique:experts'],
             'address' => ['required', 'string', 'min:5', 'max:45'],
             'openning_time' => ['required', 'string', 'max:245'],
+            'email' => ['required', 'email', 'unique:experts,email', 'max:245'],
+            'password' => ['required', 'min:8', 'max:45'],
+            'balance' => ['required', 'numeric']
         ];
         if (in_array($this->method(), ["PATCH"])) {
             $rules = [
@@ -47,6 +50,9 @@ class ExpertRequest extends FormRequest
                 'phone' => ['string', 'min:7', 'max:45', Rule::unique('experts', 'phone')->ignore($this->expert_id, 'expert_id')],
                 'address' => ['string', 'min:5', 'max:45'],
                 'openning_time' => ['string', 'max:245'],
+                'email' => ['email', Rule::unique('experts', 'email')->ignore($this->expert_id, 'expert_id'), 'max:245'],
+                'password' => ['min:8', 'max:45'],
+                'balance' => ['numeric']
             ];
         }
         return $rules;
