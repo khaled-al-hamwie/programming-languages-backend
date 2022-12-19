@@ -40,6 +40,19 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api'=>[
+            'driver' => 'token',
+            'provider' => 'users',
+        ],
+
+        'user_api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+        ],
+        'expert' => [
+            'driver' => 'token',
+            'provider' => 'experts',         
+        ],
     ],
 
     /*
@@ -64,7 +77,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
+        'experts' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\experts::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
