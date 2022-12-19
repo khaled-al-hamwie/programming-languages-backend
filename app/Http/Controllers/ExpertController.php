@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExpertRequest;
+use App\Http\Requests\LoginRequest;
 use App\Models\Expert;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class ExpertController extends Controller
 {
@@ -42,18 +45,49 @@ class ExpertController extends Controller
     {
         try {
             // $input = $request->validate();
-            Expert::create($request->validated());
+            // Expert::create($request->validated());
+            $expert = Expert::create([
+                'category_id' => $request->category_id,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'pic' => $request->pic,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'openning_time' => $request->openning_time,
+                'balance' => $request->balance
+            ]);
+            return response()->json([
+                'message' => "done",
+                'token' => $expert->createToken("API TOKEN", ['role:driver'])->plainTextToken
+            ], 201);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage()
             ], 400);
         }
-
-        return response()->json([
-            'message' => "done"
-        ], 201);
     }
+    public function login(LoginRequest $request)
+    {
+        try {
+            $expert = Expert::where('email', $request->email)->first();
+            if (!$expert || !Hash::check($request->password, $expert->password)) {
+                throw ValidationException::withMessages([
+                    'email' => ['The provided credentials are incorrect.'],
+                ]);
+            }
 
+
+            return response()->json([
+                'message' => 'User logged in Successfully',
+                'token' => $expert->createToken("API TOKEN", ['role:driver'])->plainTextToken
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
 
     public function show(int $id)
     {
