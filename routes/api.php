@@ -7,9 +7,6 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 // public
 Route::post('/expert', [ExpertController::class, 'store']);
 Route::post('/login_expert', [ExpertController::class, 'login']);
