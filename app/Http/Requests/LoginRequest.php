@@ -10,7 +10,10 @@ class LoginRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json(['errors' => $validator->errors()], 422));
+        throw new HttpResponseException(response()->json([
+            'status' => false,
+            'errors' => $validator->errors()
+        ], 422));
     }
     /**
      * Determine if the user is authorized to make this request.
