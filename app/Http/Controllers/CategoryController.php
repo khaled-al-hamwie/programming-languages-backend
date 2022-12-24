@@ -22,12 +22,7 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (is_null($category))
-            return $this->error(['value' => "the id $id not found"], 'Not Found Error', 404);
-
-        // return response()->json([
-        //     'name' => $category->title,
-        //     'experts' => $category->experts
-        // ]);
+            return $this->error(['errors' => "the id $id not found"], 'Not Found Error', 404);
         return $this->success(['category' => [
             'name' => $category->title,
             'experts' => $category->experts
