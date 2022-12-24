@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         try {
             if (!Auth::attempt($request->only(['email', 'password']))) {
-                return $this->error(['error' => 'The provided credentials are incorrect'], 'Unauthorized Error', 401);
+                return $this->error(['errors' => 'The provided credentials are incorrect'], 'Validation Error', 422);
             }
             $user = User::where('email', $request->email)->first();
             return $this->success(['user' => $user, 'token' => $user->createToken("API TOKEN", ['role:customer'])->plainTextToken], 'User logged in Successfully');
@@ -61,7 +61,7 @@ class UserController extends Controller
             Auth::user()->tokens()->delete();
             return $this->success(['value' => 'you have loged out successfully'], 'Log out done');
         } else {
-            return $this->error(['error' => 'you are not authorize'], 'Authorization error', 422);
+            return $this->error(['error' => 'you are not authorize'], 'Authorization error', 401);
         }
     }
 }
