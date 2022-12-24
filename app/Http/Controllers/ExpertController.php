@@ -25,30 +25,9 @@ class ExpertController extends Controller
     {
         $name = $request->query("name");
         if (!is_null($name))
-            return $this->success(Expert::where('name', 'regexp', "$name")->get(), 'success');
-        return $this->success(Expert::all(), 'success');
-        // return $this->success(ExpertResource::collection([
-        //     Expert::all()
-        // ]), 'success');
+            return $this->success(['expert' => Expert::where('name', 'regexp', "$name")->get()], 'success');
+        return $this->success(['expert' => Expert::all()], 'success');
     }
-    /*
-    [
-        {
-            'day':'sat'
-            'hours':[{start:9,end:14},{start:16,end:}]
-        },
-        {
-            'day':'sun'
-            'hours':{start:6,end:}
-        },
-        {
-            'day':'fri'
-            'hours':
-        }
-    ]
-
-    */
-
     public function store(ExpertRequest $request)
     {
         try {
@@ -73,7 +52,7 @@ class ExpertController extends Controller
         try {
             $expert = Expert::where('email', $request->email)->first();
             if (!$expert || !Hash::check($request->password, $expert->password)) {
-                return $this->error(['error' => 'The provided credentials are incorrect'], 'Validation Error', 422);
+                return $this->error(['errors' => 'The provided credentials are incorrect'], 'Validation Error', 422);
             }
             return $this->success(['expert' => $expert, 'token' => $expert->createToken("API TOKEN", ['role:driver'])->plainTextToken], 'User logged in Successfully');
         } catch (\Throwable $th) {
@@ -83,14 +62,14 @@ class ExpertController extends Controller
     public function logout()
     {
         Auth::user()->tokens()->delete();
-        return $this->success(['value' => 'you have loged out successfully', 'Log out done']);
+        return $this->success(['value' => 'you have loged out successfully'], 'Log out done');
     }
     public function show(int $id)
     {
         $expert = Expert::find($id);
         if (is_null($expert))
-            return $this->error(['value' => "the id $id not found"], 'Not Found Error', 404);
-        return $this->success(['experts' => ExpertResource::collection(Expert::where('expert_id', $id)->get())], 'ok');
+            return $this->error(['errors' => "the id $id not found"], 'Not Found Error', 404);
+        return $this->success(['expert' => ExpertResource::collection(Expert::where('expert_id', $id)->get())], 'ok');
     }
 
     public function update(ExpertRequest $request)
@@ -98,7 +77,7 @@ class ExpertController extends Controller
         $id = Auth::user()->expert_id;
         $expert = Expert::where('expert_id', $id);
         if (!$expert->exists())
-            return $this->error(['value' => "the id $id not found"], 'Not Found Error', 404);
+            return $this->error(['errors' => "the id $id not found"], 'Not Found Error', 404);
         try {
             $expert->update($request->validated());
         } catch (\Throwable $th) {
@@ -114,9 +93,9 @@ class ExpertController extends Controller
 
         $expert = Expert::where('expert_id', $id);
         if (!$expert->exists())
-            return $this->error(['value' => "the id $id not found"], 'Not Found Error', 404);
+            return $this->error(['errors' => "the id $id not found"], 'Not Found Error', 404);
         Auth::user()->tokens()->delete();
         $expert->delete();
-        return $this->success(['value' => 'done'], 'Deleting an Expert');
+        return $this->success(['expert' => $expert], 'Deleting an Expert');
     }
 }
