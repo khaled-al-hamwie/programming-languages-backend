@@ -13,20 +13,24 @@ class CategoryController extends Controller
     {
         $category = $request->query('category');
         if (!is_null($category)) {
-            return Category::where('title', 'regexp', "$category")->get();
+            return $this->success(['category' => Category::where('title', 'regexp', "$category")->get()], 'ok');
         }
-        return Category::all();
+        return $this->success(['category' => Category::all()], 'ok');
     }
 
     public function show(int $id)
     {
         $category = Category::find($id);
         if (is_null($category))
-            return response()->json(['messsage' => "the id $id doesn't exist"], 404);
+            return $this->error(['value' => "the id $id not found"], 'Not Found Error', 404);
 
-        return response()->json([
+        // return response()->json([
+        //     'name' => $category->title,
+        //     'experts' => $category->experts
+        // ]);
+        return $this->success(['category' => [
             'name' => $category->title,
             'experts' => $category->experts
-        ]);
+        ]], 'ok');
     }
 }
