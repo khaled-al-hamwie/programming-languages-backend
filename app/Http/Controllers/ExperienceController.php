@@ -23,7 +23,6 @@ class ExperienceController extends Controller
         } catch (\Throwable $th) {
             return $this->error(['errors' => $th->getMessage()], 'Server Error', 500);
         }
-        // return response()->json(['message' => 'sucssess'], 201);
         return $this->success(['experience' => $experience], 'Experience Created', 201);
     }
 
@@ -32,13 +31,12 @@ class ExperienceController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    //to return all the experience for a certain user
     public function show()
     {
         $experiences = Experience::where(['expert_id' => Auth::user()->expert_id])->get();
         if (is_null($experiences))
             return $this->error(['errors' => 'experiences is empty'], 'Experiences is Empty', 404);
-        return $this->success(['experiences' => $experiences], 'Experiences has been returned', 200);
+        return $this->success(['experience' => $experiences], 'Experiences has been returned', 200);
     }
 
     /**
@@ -51,13 +49,12 @@ class ExperienceController extends Controller
     public function update(ExperienceRequest $request, int $id)
     {
         $experience = Experience::where(['expert_id' => Auth::user()->expert_id, 'experience_id' => $id])->first();
-        // return $experience;
         if (is_null($experience))
             return $this->error(['errors' => "no such experience with the id $id"], 'Not found', 404);
         try {
             $experience->update($request->validated());
         } catch (\Throwable $th) {
-            return $this->error(['error' => $th->getMessage()], 'Server Error', 500);
+            return $this->error(['errors' => $th->getMessage()], 'Server Error', 500);
         }
         return $this->success(['experience' => $experience], 'Experience updated', 200);
     }
@@ -76,7 +73,7 @@ class ExperienceController extends Controller
         try {
             $experience->delete();
         } catch (\Throwable $th) {
-            return $this->error(['error' => $th->getMessage()], 'Server Error', 500);
+            return $this->error(['errors' => $th->getMessage()], 'Server Error', 500);
         }
         return $this->success(['experience' => $experience], 'Experience deleted', 200);
     }
