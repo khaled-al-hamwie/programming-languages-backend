@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExpertRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Resources\ExpertResource;
 use App\Models\Expert;
 use App\Traits\HttpResponses;
 use GrahamCampbell\ResultType\Success;
@@ -26,6 +27,9 @@ class ExpertController extends Controller
         if (!is_null($name))
             return $this->success(Expert::where('name', 'regexp', "$name")->get(), 'success');
         return $this->success(Expert::all(), 'success');
+        // return $this->success(ExpertResource::collection([
+        //     Expert::all()
+        // ]), 'success');
     }
     /*
     [
@@ -69,9 +73,6 @@ class ExpertController extends Controller
         try {
             $expert = Expert::where('email', $request->email)->first();
             if (!$expert || !Hash::check($request->password, $expert->password)) {
-                // throw ValidationException::withMessages([
-                //     'email' => ['The provided credentials are incorrect.'],
-                // ]);
                 return $this->error(['error' => 'The provided credentials are incorrect'], 'Validation Error', 422);
             }
             return $this->success(['expert' => $expert, 'token' => $expert->createToken("API TOKEN", ['role:driver'])->plainTextToken], 'User logged in Successfully');
@@ -88,14 +89,12 @@ class ExpertController extends Controller
     {
         $expert = Expert::find($id);
         if (is_null($expert))
-            return response()->json(['messsage' => "the id $id doesn't exist"], 404);
-        $expert->experiences;
-        return $expert;
+            return $this->error(['value' => "the id $id not found"], 'Not Found Error', 404);
+        return $this->success(['experts' => ExpertResource::collection(Expert::where('expert_id', $id)->get())], 'ok');
     }
 
     public function update(ExpertRequest $request)
     {
-        // return "hi";
         $id = Auth::user()->expert_id;
         $expert = Expert::where('expert_id', $id);
         if (!$expert->exists())
@@ -106,13 +105,11 @@ class ExpertController extends Controller
             return $this->error(['errors' => $th->getMessage()], 'Error While Updating', 400);
         }
 
-        // return response()->json(['message' => 'done']);
         return $this->success(['expert' => $expert], "the Expert with $id has been updated");
     }
 
     public function destroy()
     {
-        // return  Auth::user()->expert_id;
         $id = Auth::user()->expert_id;
 
         $expert = Expert::where('expert_id', $id);

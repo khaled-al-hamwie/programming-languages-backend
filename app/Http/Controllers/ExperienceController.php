@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExperienceRequest;
 use App\Models\Experience;
+use App\Traits\HttpResponses;
+use Illuminate\Support\Facades\Auth;
 
 class ExperienceController extends Controller
 {
+    use HttpResponses;
     /**
      * Store a newly created resource in storage.
      *
@@ -16,11 +19,12 @@ class ExperienceController extends Controller
     public function store(ExperienceRequest $request)
     {
         try {
-            Experience::create($request->validated());
+            $experience = Experience::create([...$request->validated(), 'expert_id' => Auth::user()->expert_id]);
         } catch (\Throwable $th) {
-            return response()->json(['errors' => $th->getMessage()]);
+            return $this->error(['errors' => $th->getMessage()], 'Server Error', 500);
         }
-        return response()->json(['message' => 'sucssess'], 201);
+        // return response()->json(['message' => 'sucssess'], 201);
+        return $this->success(['experience' => $experience], 'Experience Created', 201);
     }
 
     /**
@@ -28,12 +32,13 @@ class ExperienceController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    //to return all the experience for a certain user
+    public function show()
     {
-        $experience = Experience::find($id);
-        if (is_null($experience))
-            return response()->json(['messsage' => "the id $id doesn't exist"], 404);
-        return $experience;
+        $experiences = Experience::where(['expert_id' => Auth::user()->expert_id])->get();
+        if (is_null($experiences))
+            return $this->error(['errors' => 'experiences is empty'], 'Experiences is Empty', 404);
+        return $this->success(['experiences' => $experiences], 'Experiences has been returned', 200);
     }
 
     /**
@@ -45,15 +50,16 @@ class ExperienceController extends Controller
      */
     public function update(ExperienceRequest $request, int $id)
     {
-        $experience = Experience::find($id);
+        $experience = Experience::where(['expert_id' => Auth::user()->expert_id, 'experience_id' => $id])->first();
+        // return $experience;
         if (is_null($experience))
-            return response()->json(['messsage' => "the id $id doesn't exist"], 404);
+            return $this->error(['errors' => "no such experience with the id $id"], 'Not found', 404);
         try {
             $experience->update($request->validated());
         } catch (\Throwable $th) {
-            return response()->json(['errors' => $th->getMessage()]);
+            return $this->error(['error' => $th->getMessage()], 'Server Error', 500);
         }
-        return response()->json(['message' => 'sucssess']);
+        return $this->success(['experience' => $experience], 'Experience updated', 200);
     }
 
     /**
@@ -64,14 +70,14 @@ class ExperienceController extends Controller
      */
     public function destroy(int $id)
     {
-        $experience = Experience::find($id);
+        $experience = Experience::where(['expert_id' => Auth::user()->expert_id, 'experience_id' => $id])->first();
         if (is_null($experience))
-            return response()->json(['messsage' => "the id $id doesn't exist"], 404);
+            return $this->error(['errors' => "no such experience with the id $id"], 'Not found', 404);
         try {
             $experience->delete();
         } catch (\Throwable $th) {
-            return response()->json(['errors' => $th->getMessage()]);
+            return $this->error(['error' => $th->getMessage()], 'Server Error', 500);
         }
-        return response()->json(['message' => 'sucssess']);
+        return $this->success(['experience' => $experience], 'Experience deleted', 200);
     }
 }

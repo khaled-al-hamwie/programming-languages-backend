@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -50,19 +49,19 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'balance' => $request->balance
             ]);
-            return $this->success(['user' => $user, 'token' => $user->createToken("API TOKEN", ['role:customer'])->plainTextToken], 'User Created Successfully');
+            return $this->success(['user' => $user, 'token' => $user->createToken("API TOKEN", ['role:customer'])->plainTextToken], 'User Created Successfully', 201);
         } catch (\Throwable $th) {
             return $this->error(['errors' => $th->getMessage()], "Server Error", 500);
         }
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        // dd(Auth()->user()->currentAccessToken()->token());
-        // return Auth::user()->tokens()->where('id', $id)->delete();
-        // return User::where('user_id', 2)->tokens();
-        // dd(Auth()->user());
-        Auth()->user()->tokens;
-        return response()->json(['Success' => 'Logged out'], 200);
+        if (!is_null(Auth::user()->user_id)) {
+            Auth::user()->tokens()->delete();
+            return $this->success(['value' => 'you have loged out successfully'], 'Log out done');
+        } else {
+            return $this->error(['error' => 'you are not authorize'], 'Authorization error', 422);
+        }
     }
 }

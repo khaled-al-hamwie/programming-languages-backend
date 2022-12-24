@@ -21,13 +21,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/expert', [ExpertController::class, 'destroy']);
     Route::post('/logout_expert', [ExpertController::class, 'logout']);
 
+    Route::get('/experience', [ExperienceController::class, 'show']);
     Route::post('/experience', [ExperienceController::class, 'store']);
     Route::patch('/experience/{id}', [ExperienceController::class, 'update']);
     Route::delete('/experience/{id}', [ExperienceController::class, 'destroy']);
     // user and expert
     Route::get('/expert', [ExpertController::class, 'index']);
-
-    Route::get('/experience/{id}', [ExperienceController::class, 'show']);
 
     Route::get('/category', [CategoryController::class, 'index'])->middleware('auth:sanctum');
     Route::get('/category/{id}', [CategoryController::class, 'show']);
