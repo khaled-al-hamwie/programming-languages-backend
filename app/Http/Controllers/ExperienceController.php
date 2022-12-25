@@ -18,6 +18,9 @@ class ExperienceController extends Controller
      */
     public function store(ExperienceRequest $request)
     {
+        if (!is_null(Auth::user()->user_id)) {
+            return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
+        }
         try {
             $experience = Experience::create([...$request->validated(), 'expert_id' => Auth::user()->expert_id]);
         } catch (\Throwable $th) {
@@ -33,6 +36,9 @@ class ExperienceController extends Controller
      */
     public function show()
     {
+        if (!is_null(Auth::user()->user_id)) {
+            return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
+        }
         $experiences = Experience::where(['expert_id' => Auth::user()->expert_id])->get();
         if (is_null($experiences))
             return $this->error(['errors' => 'experiences is empty'], 'Experiences is Empty', 404);
@@ -48,6 +54,9 @@ class ExperienceController extends Controller
      */
     public function update(ExperienceRequest $request, int $id)
     {
+        if (!is_null(Auth::user()->user_id)) {
+            return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
+        }
         $experience = Experience::where(['expert_id' => Auth::user()->expert_id, 'experience_id' => $id])->first();
         if (is_null($experience))
             return $this->error(['errors' => "no such experience with the id $id"], 'Not found', 404);
@@ -67,6 +76,9 @@ class ExperienceController extends Controller
      */
     public function destroy(int $id)
     {
+        if (!is_null(Auth::user()->user_id)) {
+            return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
+        }
         $experience = Experience::where(['expert_id' => Auth::user()->expert_id, 'experience_id' => $id])->first();
         if (is_null($experience))
             return $this->error(['errors' => "no such experience with the id $id"], 'Not found', 404);

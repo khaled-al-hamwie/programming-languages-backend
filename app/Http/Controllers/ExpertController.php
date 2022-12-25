@@ -61,6 +61,9 @@ class ExpertController extends Controller
     }
     public function logout()
     {
+        if (!is_null(Auth::user()->user_id)) {
+            return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
+        }
         Auth::user()->tokens()->delete();
         return $this->success(['value' => 'you have loged out successfully'], 'Log out done');
     }
@@ -74,6 +77,9 @@ class ExpertController extends Controller
 
     public function update(ExpertRequest $request)
     {
+        if (!is_null(Auth::user()->user_id)) {
+            return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
+        }
         $id = Auth::user()->expert_id;
         $expert = Expert::where('expert_id', $id);
         if (!$expert->exists())
@@ -89,6 +95,9 @@ class ExpertController extends Controller
 
     public function destroy()
     {
+        if (!is_null(Auth::user()->user_id)) {
+            return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
+        }
         $id = Auth::user()->expert_id;
 
         $expert = Expert::where('expert_id', $id);

@@ -8,18 +8,17 @@ use Illuminate\Support\Facades\Route;
 
 
 // public
-Route::post('/expert', [ExpertController::class, 'store']);
-Route::post('/login_expert', [ExpertController::class, 'login']);
+Route::post('/expert/register', [ExpertController::class, 'store']);
+Route::post('/expert/login', [ExpertController::class, 'login']);
 
-Route::post('/create_user', [UserController::class, 'store']);
-Route::post('/login_user', [UserController::class, 'login']);
+Route::post('/user/register', [UserController::class, 'store']);
+Route::post('/user/login', [UserController::class, 'login']);
 
-// only expert
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/expert/{id}', [ExpertController::class, 'show']);
+    // only expert
     Route::patch('/expert', [ExpertController::class, 'update']);
     Route::delete('/expert', [ExpertController::class, 'destroy']);
-    Route::post('/logout_expert', [ExpertController::class, 'logout']);
+    Route::post('/expert/logout', [ExpertController::class, 'logout']);
 
     Route::get('/experience', [ExperienceController::class, 'show']);
     Route::post('/experience', [ExperienceController::class, 'store']);
@@ -27,10 +26,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/experience/{id}', [ExperienceController::class, 'destroy']);
     // user and expert
     Route::get('/expert', [ExpertController::class, 'index']);
+    Route::get('/expert/{id}', [ExpertController::class, 'show']);
 
-    Route::get('/category', [CategoryController::class, 'index'])->middleware('auth:sanctum');
+    Route::get('/category', [CategoryController::class, 'index']);
     Route::get('/category/{id}', [CategoryController::class, 'show']);
 
     // only user
-    Route::post('/logout_user',   [UserController::class, 'logout']);
+    Route::post('/user/logout',   [UserController::class, 'logout']);
 });
