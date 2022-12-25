@@ -14,12 +14,10 @@ class Expert extends Model
     protected $fillable = ['name', 'pic', 'phone', 'address', 'openning_time', 'category_id', 'email', 'password', 'balance'];
     protected $attributes = [
         'rating' => 0,
-        // 'experiences' => $this->experiences
+        'pic' => 'images/default.png'
     ];
     protected $hidden = [
-        'pic',
         'password'
-        // 'expert_id'
     ];
     public $timestamps = false;
 

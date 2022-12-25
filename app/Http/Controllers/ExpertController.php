@@ -7,20 +7,14 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Resources\ExpertResource;
 use App\Models\Expert;
 use App\Traits\HttpResponses;
-use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class ExpertController extends Controller
 {
     use HttpResponses;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
         $name = $request->query("name");
@@ -28,15 +22,20 @@ class ExpertController extends Controller
             return $this->success(['expert' => Expert::where('name', 'regexp', "$name")->get()], 'success');
         return $this->success(['expert' => Expert::all()], 'success');
     }
+
     public function store(ExpertRequest $request)
     {
+        // To Fix
+        // do a little refactoring to save the image
+        $newImageName = time() . '-' . $request->name . '.' . $request->pic->extension();
+        $request->pic->move(public_path('images'), $newImageName);
         try {
             $expert = Expert::create([
                 'category_id' => $request->category_id,
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'pic' => $request->pic,
+                'pic' => 'images/' . $newImageName,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'openning_time' => $request->openning_time,
@@ -47,6 +46,7 @@ class ExpertController extends Controller
             return $this->error(['errors' => $th->getMessage()], 'Creating account Error', 400);
         }
     }
+
     public function login(LoginRequest $request)
     {
         try {
@@ -59,6 +59,7 @@ class ExpertController extends Controller
             return $this->error(['errors' => $th->getMessage()], "Server Error", 500);
         }
     }
+
     public function logout()
     {
         if (!is_null(Auth::user()->user_id)) {
@@ -67,6 +68,7 @@ class ExpertController extends Controller
         Auth::user()->tokens()->delete();
         return $this->success(['value' => 'you have loged out successfully'], 'Log out done');
     }
+
     public function show(int $id)
     {
         $expert = Expert::find($id);
@@ -81,10 +83,13 @@ class ExpertController extends Controller
             return $this->error(['errors' => 'you are not authorize to access this route'], "Unauthorize Error", 401);
         }
         $id = Auth::user()->expert_id;
-        $expert = Expert::where('expert_id', $id);
+        $expert = Expert::where('expert_id', $id)->first();
         if (!$expert->exists())
             return $this->error(['errors' => "the id $id not found"], 'Not Found Error', 404);
         try {
+            if ($request->pic) {
+                return "there is an image";
+            }
             $expert->update($request->validated());
         } catch (\Throwable $th) {
             return $this->error(['errors' => $th->getMessage()], 'Error While Updating', 400);
@@ -103,8 +108,8 @@ class ExpertController extends Controller
         $expert = Expert::where('expert_id', $id);
         if (!$expert->exists())
             return $this->error(['errors' => "the id $id not found"], 'Not Found Error', 404);
-        Auth::user()->tokens()->delete();
         $expert->delete();
-        return $this->success(['expert' => $expert], 'Deleting an Expert');
+        Auth::user()->tokens()->delete();
+        return $this->success(['expert' => $expert->first()], 'Deleting an Expert');
     }
 }
