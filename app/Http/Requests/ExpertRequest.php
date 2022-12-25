@@ -34,7 +34,7 @@ class ExpertRequest extends FormRequest
         $rules = [
             'name' => ['required', 'string', 'min:5', 'max:45'],
             'category_id' => ['required', 'numeric', 'exists:categories,category_id'],
-            'pic' => ['file', 'image', 'dimensions:min_width=100,min_height=100'],
+            'pic' => ['mimes:png,jpg,jpeg', 'max:5048'],
             'phone' => ['required', 'string', 'min:7', 'max:45', 'unique:experts'],
             'address' => ['required', 'string', 'min:5', 'max:45'],
             'openning_time' => ['required', 'string', 'max:245'],
@@ -42,11 +42,11 @@ class ExpertRequest extends FormRequest
             'password' => ['required', 'min:8', 'max:45'],
             'balance' => ['required', 'numeric']
         ];
-        if (in_array($this->method(), ["PATCH"])) {
+        if ($this->path() == "api/expert") {
             $rules = [
                 'name' => ['string', 'min:5', 'max:45'],
                 'category_id' => ['numeric', 'exists:categories,category_id'],
-                'pic' => ['file', 'image', 'dimensions:min_width=100,min_height=100'],
+                'pic' => ['mimes:png,jpg,jpeg', 'max:5048'],
                 'phone' => ['string', 'min:7', 'max:45', Rule::unique('experts', 'phone')->ignore($this->expert_id, 'expert_id')],
                 'address' => ['string', 'min:5', 'max:45'],
                 'openning_time' => ['string', 'max:245'],

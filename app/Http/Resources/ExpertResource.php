@@ -25,6 +25,7 @@ class ExpertResource extends JsonResource
             'address' => $this->address,
             'rating' => $this->rating,
             'openning_time' => $this->openning_time,
+            'pic' => $this->pic,
             'experience' => array_map(function ($experience) {
                 return [
                     'experience_id' => (string) $experience->experience_id,

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name', 45);
             $table->string('details', 245);
             $table->boolean('is_private');
-            $table->foreign('expert_id')->references('expert_id')->on('experts');
+            $table->foreign('expert_id')->references('expert_id')->on('experts')->cascadeOnDelete();
         });
     }
 
