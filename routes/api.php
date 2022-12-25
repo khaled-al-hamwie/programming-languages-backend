@@ -16,7 +16,7 @@ Route::post('/user/login', [UserController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // only expert
-    Route::patch('/expert', [ExpertController::class, 'update']);
+    Route::post('/expert', [ExpertController::class, 'update']);
     Route::delete('/expert', [ExpertController::class, 'destroy']);
     Route::post('/expert/logout', [ExpertController::class, 'logout']);
 

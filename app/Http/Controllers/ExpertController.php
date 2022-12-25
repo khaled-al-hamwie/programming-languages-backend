@@ -25,10 +25,11 @@ class ExpertController extends Controller
 
     public function store(ExpertRequest $request)
     {
-        // To Fix
-        // do a little refactoring to save the image
-        $newImageName = time() . '-' . $request->name . '.' . $request->pic->extension();
-        $request->pic->move(public_path('images'), $newImageName);
+        $newImageName = 'default.png';
+        if (!is_null($request->pic)) {
+            $newImageName = time() . '-' . str_replace([' ', '/', '\\', '"', '\'', '.'], '', $request->name) . '.' . $request->pic->extension();
+            $request->pic->move(public_path('images'), $newImageName);
+        }
         try {
             $expert = Expert::create([
                 'category_id' => $request->category_id,
@@ -87,10 +88,12 @@ class ExpertController extends Controller
         if (!$expert->exists())
             return $this->error(['errors' => "the id $id not found"], 'Not Found Error', 404);
         try {
-            if ($request->pic) {
-                return "there is an image";
+            $newImageName = substr($expert->pic, 7, strlen($expert->pic));
+            if (!is_null($request->pic)) {
+                $newImageName = time() . '-' . str_replace([' ', '/', '\\', '"', '\'', '.'], '', $expert->name) . '.' . $request->pic->extension();
+                $request->pic->move(public_path('images'), $newImageName);
             }
-            $expert->update($request->validated());
+            $expert->update([...$request->except('pic'), 'pic' => 'images/' . $newImageName]);
         } catch (\Throwable $th) {
             return $this->error(['errors' => $th->getMessage()], 'Error While Updating', 400);
         }

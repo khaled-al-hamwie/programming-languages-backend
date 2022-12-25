@@ -42,7 +42,7 @@ class ExpertRequest extends FormRequest
             'password' => ['required', 'min:8', 'max:45'],
             'balance' => ['required', 'numeric']
         ];
-        if (in_array($this->method(), ["PATCH"])) {
+        if ($this->path() == "api/expert") {
             $rules = [
                 'name' => ['string', 'min:5', 'max:45'],
                 'category_id' => ['numeric', 'exists:categories,category_id'],
